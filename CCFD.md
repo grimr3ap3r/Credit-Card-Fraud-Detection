@@ -594,16 +594,14 @@ table(model_weights)
 
 Thus we can see that non fraud observations were assigned a weight of 0.5 while fraud observations were assigned weight of 289.77.
 
-Change this
-
 ``` r
-lmw <- glm(Class~.,data = train,family = binomial,weights = model_weights)
-lmwprob <- predict(lmw,newdata = test,type = "response")
-lmwpred <- ifelse(lmwprob > 0.5,1,0)
+LRweighted <- glm(Class~.,data = train,family = binomial,weights = model_weights)
+LRweightedprob <- predict(LRweighted,newdata = test,type = "response")
+LRweightedpred <- ifelse(lmwprob > 0.5,1,0)
 ```
 
 ``` r
-modelper(lmwpred)
+modelper(LRweightedpred)
 ```
 
 ![](CCFD_files/figure-markdown_github/unnamed-chunk-52-1.png)
@@ -664,9 +662,6 @@ modelper(SVMweightedpred)
 
 Both the models dont perform better than logistic regression model in classifying fraud observations.
 
-DT: type = "prob" LR: type = "response"
-
-Cost Matrix Anomaly Detection
 
 Ensembling different models
 ===========================
@@ -701,7 +696,7 @@ Amongst all the models we have trained, we will select the models with highest a
 probLR <- data.frame(LRprobSMOTE,LRprobOS,lmwprob)
 ```
 
-But first we must check the correlation of these probabilities so that the average we get is not same as that of a model.
+But first we must check the correlation of these probabilities so that the average probability we get is not same as that of a model.
 
 ``` r
 cor(probLR)
@@ -712,9 +707,7 @@ cor(probLR)
     ## LRprobOS      0.8724429 1.0000000 0.9998152
     ## lmwprob       0.8714001 0.9998152 1.0000000
 
-As we see all the models are highly correlated and ensembling them would result in same AUC.
-
-remove this
+As we see all the models are highly correlated and ensembling them would result in same AUC as one of the model.
 
 Lets select one logistic regression model and other models with high AUC.
 
@@ -759,15 +752,15 @@ Thus we get a very minute improvement over logistic regression model on SMOTE tr
 Closing Remarks
 ---------------
 
-1\] Random Forest wasn't used due to computational limitations. 2\] KNN wasn't also used because it gave 'too many ties' error. 3\] Ensembling other models might give better results 4\] Anomaly detection approach can also be used to detect fraud transactions.
+1\] Random Forest wasn't used due to computational limitations. 
+2\] KNN wasn't also used because it gave 'too many ties' error. 
+3\] Other Ensembling techniques might give better results. 
+4\] Anomaly detection approach can also be used to detect fraud transactions.
 
-Fraudulent transaction detector (positive class is "fraud"): Optimize for sensitivity FN as a variable Because false positives (normal transactions that are flagged as possible fraud) are more acceptable than false negatives (fraudulent transactions that are not detected)
+
 
 ------------------------------------------------------------------------
 
-Original KNN combine train and test then scale
-
-x
 
 ``` r
 LRprobUS <- predict(LRmodelUS,type = "response",newdata = test)
